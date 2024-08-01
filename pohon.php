@@ -11,6 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo $message;
 }
 
+// Checking and displaying the session flash message
+if (isset($_SESSION['message'])) {
+    echo "<script>alert('" . $_SESSION['message'] . "');</script>";
+    unset($_SESSION['message'], $_SESSION['message_type']);
+}
 ?>
 
 <!DOCTYPE html>

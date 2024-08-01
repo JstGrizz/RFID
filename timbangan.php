@@ -1,13 +1,22 @@
 <?php
 include 'function.php';
 
+// Somewhere in your script after the form is processed
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rfid = $_POST['rfid'];
     $berat = $_POST['berat'];
 
-    $message = insertOrUpdateTimbangan($rfid, $berat);
-    echo $message;
+    // Call the function to insert or update data
+    insertOrUpdateTimbangan($rfid, $berat);
 }
+
+// Check and display the session flash message
+if (isset($_SESSION['message'])) {
+    echo "<script>alert('" . $_SESSION['message'] . "');</script>";
+    // Unset the message after displaying it
+    unset($_SESSION['message'], $_SESSION['message_type']);
+}
+
 ?>
 
 <!DOCTYPE html>

@@ -1,5 +1,6 @@
 <?php
 include 'db.php';
+session_start(); // Ensure session is started at the top of the script
 
 function insertPohon($rfid, $status, $latitude, $longitude, $blok)
 {
@@ -33,21 +34,9 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
     exit;
 }
 
-// Handling the form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $rfid = $_POST['rfid'];
-    $status = $_POST['status'];
-    $latitude = $_POST['latitude'];
-    $longitude = $_POST['longitude'];
-    $blok = $_POST['blok'];
-
-    // Call the function to insert data
-    insertPohon($rfid, $status, $latitude, $longitude, $blok);
-}
 
 
 
-session_start(); // Ensure session is started at the top of the script
 
 function insertOrUpdateTimbangan($rfid, $berat)
 {

@@ -149,13 +149,24 @@ $result = $conn->query($query);
                 const dataTable = new simpleDatatables.DataTable("#dataResultsTable", {
                     searchable: true,
                     fixedHeight: true,
-                    perPageSelect: [5, 10, 15, 20, 25] // This allows users to select how many rows they want to see
+                    perPageSelect: [5, 10, 15, 20, 25], // This allows users to select how many rows they want to see
+                    labels: {
+                        placeholder: "Search...", // Placeholder for the search box
+                        perPage: "{select} entries per page", // Label for the per-page selector
+                        noRows: "No entries found", // Message when no entries are found
+                        info: "Showing {start} to {end} of {rows} entries" // Information text
+                    }
                 });
 
                 // Adding a custom class to the perPageSelect dropdown after initialization
                 const selector = dataTable.wrapper.querySelector(".dataTable-selector");
                 if (selector) {
                     selector.classList.add("form-select"); // Add your custom class here
+                }
+
+                const pagination = dataTable.wrapper.querySelector("nav.dataTable-pagination");
+                if (pagination) {
+                    pagination.style.textAlign = "right"; // Align pagination to the right
                 }
             });
         </script>

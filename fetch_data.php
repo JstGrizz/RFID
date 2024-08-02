@@ -9,7 +9,7 @@ if (isset($_GET['rfid'])) {
     $rfid = $_GET['rfid'];
 
     // Prepare and execute a database query to fetch data based on RFID
-    $stmt = $conn->prepare("SELECT rfid, induk, created_at, ratoon, latitude, longitude, berat FROM tree_data WHERE rfid = ?");
+    $stmt = $conn->prepare("SELECT rfid, blok, created_at, status, latitude, longitude, berat FROM tree_data WHERE rfid = ? ORDER BY created_at DESC LIMIT 1");
     $stmt->bind_param("s", $rfid);
     $stmt->execute();
     $result = $stmt->get_result();

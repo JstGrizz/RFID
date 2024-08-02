@@ -43,7 +43,7 @@ if (isset($_SESSION['message'])) {
                 <div class="sidebar-header position-relative">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="logo">
-                            <a href="index.php"><img src="assets/Image/logo.png" alt="Logo" style="width: 100px; height: 100px;" srcset="" /></a>
+                            <a href="Laporan.php"><img src="assets/Image/logo.png" alt="Logo" style="width: 100px; height: 100px;" srcset="" /></a>
                         </div>
                         <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--system-uicons" width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 21 21">
@@ -74,9 +74,9 @@ if (isset($_SESSION['message'])) {
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-item">
-                            <a href="index.php" class="sidebar-link">
+                            <a href="Laporan.php" class="sidebar-link">
                                 <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
+                                <span>Laporan</span>
                             </a>
                         </li>
                         <li class="sidebar-item active">
@@ -107,34 +107,30 @@ if (isset($_SESSION['message'])) {
             </div>
             <div class="page-content">
                 <section class="section">
-                    <div class="container">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="card-body">
-                                    <form class="form form-horizontal" id="timbanganForm" action="timbangan.php" method="post">
-                                        <div class="form-body">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <label for="rfid">RFID</label>
-                                                </div>
-                                                <div class="col-md-10 form-group">
-                                                    <input type="text" id="rfid" class="form-control" name="rfid" placeholder="Scan RFID Pohon" oninput="fetchRFIDData()" />
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label for="berat">Berat</label>
-                                                </div>
-                                                <div class="col-md-10 form-group">
-                                                    <input type="text" id="berat" class="form-control" name="berat" placeholder="Input Data Berat Pohon" />
-                                                </div>
-                                                <div class="col-sm-12 d-flex justify-content-end">
-                                                    <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
-                                                    <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
-                                                </div>
-                                            </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="form form-horizontal" id="timbanganForm" action="timbangan.php" method="post">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <label for="rfid">RFID</label>
                                         </div>
-                                    </form>
+                                        <div class="col-md-10 form-group">
+                                            <input type="text" id="rfid" class="form-control" name="rfid" placeholder="Scan RFID Pohon" oninput="fetchRFIDData()" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="berat">Berat</label>
+                                        </div>
+                                        <div class="col-md-10 form-group">
+                                            <input type="text" id="berat" class="form-control" name="berat" placeholder="Input Data Berat Pohon" />
+                                        </div>
+                                        <div class="col-sm-12 d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>
+                                            <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </section>

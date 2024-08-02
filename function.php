@@ -88,3 +88,6 @@ function insertOrUpdateTimbangan($rfid, $berat)
     exit;
 }
 
+
+
+

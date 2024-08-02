@@ -111,8 +111,7 @@ $result = $conn->query($query);
                                                 <th>Longitude</th>
                                                 <th>Blok</th>
                                                 <th>Berat</th>
-                                                <th>Tanggal Input Data
-                                                <th>
+                                                <th>Tanggal Input Data</th>
                                             </tr>
                                         </thead>
                                         <tbody id="dataResults">

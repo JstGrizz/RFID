@@ -1,19 +1,18 @@
 <?php
 include 'function.php';
 
-// Handling the form submission
+// Handle the form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rfid = $_POST['rfid'];
-    $status = $_POST['status'];
+    $status = $_POST['status'];  // Assuming status is provided in the form
     $latitude = $_POST['latitude'];
     $longitude = $_POST['longitude'];
     $blok = $_POST['blok'];
 
-    // Call the function to insert data
     insertPohon($rfid, $status, $latitude, $longitude, $blok);
 }
 
-// Checking and displaying the session flash message
+// Display and clear session messages
 if (isset($_SESSION['message'])) {
     echo "<script>alert('" . $_SESSION['message'] . "');</script>";
     unset($_SESSION['message'], $_SESSION['message_type']);

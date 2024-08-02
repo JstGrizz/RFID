@@ -5,13 +5,18 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
 {
     global $conn;
 
+    // Ensure that latitude and longitude are correctly formatted as floats
     $latitude = floatval($latitude);
     $longitude = floatval($longitude);
 
     // Prepare to insert new data
     $insert_query = $conn->prepare("INSERT INTO tree_data (rfid, status, latitude, longitude, blok) VALUES (?, ?, ?, ?, ?)");
-    $insert_query->bind_param("ssdds", $rfid, $status, $latitude, $longitude, $blok);
+    if ($insert_query === false) {
+        die('MySQL prepare error: ' . $conn->error);
+    }
 
+    // Bind parameters and execute
+    $insert_query->bind_param("ssdds", $rfid, $status, $latitude, $longitude, $blok);
     if ($insert_query->execute()) {
         $_SESSION['message'] = 'New record created successfully.';
         $_SESSION['message_type'] = 'success';
@@ -21,9 +26,9 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
     }
 
     $insert_query->close();
-    $conn->close(); // Consider not closing here if using connection elsewhere
+    $conn->close(); // Consider keeping the connection open if it's used elsewhere
 
-    // Redirect to a clean URL
+    // Redirect to a clean URL to avoid form resubmission on refresh
     header("Location: pohon.php");
     exit;
 }

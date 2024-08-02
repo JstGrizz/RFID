@@ -1,14 +1,16 @@
 <?php
 include 'function.php';
 
+// Handling the form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rfid = $_POST['rfid'];
-    $ratoon = $_POST['ratoon'];
+    $status = $_POST['status'];
     $latitude = $_POST['latitude'];
     $longitude = $_POST['longitude'];
+    $blok = $_POST['blok'];
 
-    $message = insertOrUpdatePohon($rfid, $ratoon, $latitude, $longitude);
-    echo $message;
+    // Call the function to insert data
+    insertPohon($rfid, $status, $latitude, $longitude, $blok);
 }
 
 // Checking and displaying the session flash message
@@ -118,11 +120,21 @@ if (isset($_SESSION['message'])) {
                                             <input type="text" id="rfid" class="form-control" name="rfid" placeholder="Scan RFID Pohon" oninput="fetchRFIDData()" />
                                         </div>
                                         <div class="col-md-2">
-                                            <label for="ratoon">Ratoon</label>
+                                            <label for="rfid">Status Pohon</label>
                                         </div>
                                         <div class="col-md-10 form-group">
-                                            <input type="text" id="ratoon" class="form-control" name="ratoon" placeholder="Input Data Ratoon Ke-berapa" />
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="status" name="status" >
+                                                    <option>Induk</option>
+                                                    <option>Ratoon 1</option>
+                                                    <option>Ratoon 2</option>
+                                                    <option>Ratoon 3</option>
+                                                    <option>Ratoon 4</option>
+                                                    <option>Ratoon 5</option>
+                                                </select>
+                                            </fieldset>
                                         </div>
+                                        </fieldset>
                                         <div class="col-md-2">
                                             <label for="latitude">Latitude</label>
                                         </div>
@@ -134,6 +146,12 @@ if (isset($_SESSION['message'])) {
                                         </div>
                                         <div class="col-md-10 form-group">
                                             <input type="text" id="longitude" class="form-control" name="longitude" placeholder="Input Data Longitude" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="latitude">Blok</label>
+                                        </div>
+                                        <div class="col-md-10 form-group">
+                                            <input type="text" id="blok" class="form-control" name="blok" placeholder="Input Data Blok" />
                                         </div>
                                         <div class="col-sm-12 d-flex justify-content-end">
                                             <button type="submit" class="btn btn-primary me-1 mb-1">Submit</button>

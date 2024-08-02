@@ -172,10 +172,10 @@ if (isset($_SESSION['message'])) {
                                     <thead>
                                         <tr>
                                             <th>RFID</th>
-                                            <th>Induk</th>
-                                            <th>Ratoon</th>
+                                            <th>Status</th>
                                             <th>Latitude</th>
                                             <th>Longitude</th>
+                                            <th>Blok</th>
                                             <th>Berat</th>
                                             <th>Tanggal Input Data
                                             <th>

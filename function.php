@@ -40,40 +40,37 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
 
 function insertOrUpdateTimbangan($rfid, $berat)
 {
-    global $conn; // Ensure your database connection is globally accessible or pass it as a parameter
+    global $conn;
 
-    // Check if RFID exists and retrieve current induk value
-    $check_query = $conn->prepare("SELECT id, induk FROM tree_data WHERE rfid = ?");
+    // Check if RFID exists and retrieve the highest id (most recent entry)
+    $check_query = $conn->prepare("SELECT id FROM tree_data WHERE rfid = ? ORDER BY id DESC LIMIT 1");
     $check_query->bind_param("s", $rfid);
     $check_query->execute();
     $check_query->store_result();
-    $check_query->bind_result($id, $current_induk);
+    $check_query->bind_result($id);
     $check_query->fetch();
 
     if ($check_query->num_rows > 0) {
-        // RFID exists, calculate new induk
-        $new_induk = ($current_induk == 0) ? 1 : $current_induk + 1;
-
-        // Update the berat and induk
-        $update_query = $conn->prepare("UPDATE tree_data SET berat = ?, induk = ? WHERE rfid = ?");
-        $update_query->bind_param("dis", $berat, $new_induk, $rfid);
+        // RFID exists, update the berat of the latest (highest id) entry
+        $update_query = $conn->prepare("UPDATE tree_data SET berat = ? WHERE id = ?");
+        $update_query->bind_param("di", $berat, $id);
         if ($update_query->execute()) {
             // Set success message in session
-            $_SESSION['message'] = 'Berat and Induk data updated successfully.';
+            $_SESSION['message'] = 'Berat updated successfully for the latest record.';
             $_SESSION['message_type'] = 'success';
         } else {
             // Set error message in session
-            $_SESSION['message'] = 'Failed to update berat and induk data.';
+            $_SESSION['message'] = 'Failed to update berat for the latest record.';
             $_SESSION['message_type'] = 'error';
         }
         $update_query->close();
     } else {
-        // RFID does not exist, insert new data with induk starting at 1
-        $insert_query = $conn->prepare("INSERT INTO tree_data (rfid, berat, induk) VALUES (?, ?, 1)");
+        // RFID does not exist, insert new data with initial berat
+        $insert_query = $conn->prepare("INSERT INTO tree_data (rfid, berat) VALUES (?, ?)");
         $insert_query->bind_param("sd", $rfid, $berat);
         if ($insert_query->execute()) {
             // Set success message in session
-            $_SESSION['message'] = 'New record created successfully with induk initialized to 1.';
+            $_SESSION['message'] = 'New record created successfully.';
             $_SESSION['message_type'] = 'success';
         } else {
             // Set error message in session
@@ -86,7 +83,8 @@ function insertOrUpdateTimbangan($rfid, $berat)
     $check_query->close();
     $conn->close(); // Consider not closing here if using connection elsewhere
 
-    // Redirect to a clean URL
+    // Redirect to a clean URL to prevent form resubmission
     header("Location: timbangan.php");
     exit;
 }
+

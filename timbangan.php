@@ -148,10 +148,10 @@ if (isset($_SESSION['message'])) {
                                     <thead>
                                         <tr>
                                             <th>RFID</th>
-                                            <th>Induk</th>
-                                            <th>Ratoon</th>
+                                            <th>Status</th>
                                             <th>Latitude</th>
                                             <th>Longitude</th>
+                                            <th>Blok</th>
                                             <th>Berat</th>
                                             <th>Tanggal Input Data
                                             <th>
@@ -200,10 +200,10 @@ if (isset($_SESSION['message'])) {
                             results.forEach(function(row) {
                                 output += '<tr>' +
                                     '<td>' + row.rfid + '</td>' +
-                                    '<td>' + row.induk + '</td>' +
-                                    '<td>' + row.ratoon + '</td>' +
+                                    '<td>' + row.status + '</td>' +
                                     '<td>' + row.latitude + '</td>' +
                                     '<td>' + row.longitude + '</td>' +
+                                    '<td>' + row.blok + '</td>' +
                                     '<td>' + row.berat + '</td>' +
                                     '<td>' + row.created_at + '</td>' +
                                     '</tr>';

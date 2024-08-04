@@ -2,7 +2,9 @@
 include 'function.php';  // Include your database connection script
 
 // Fetch data
-$query = "SELECT * FROM tree_data ORDER BY created_at DESC"; // Adjust according to your table schema
+$query = "SELECT td.rfid, td.blok, td.created_at, s.status_name, td.latitude, td.longitude, td.berat
+                            FROM tree_data td
+                            JOIN status s ON td.status_id = s.id ORDER BY created_at DESC"; // Adjust according to your table schema
 $result = $conn->query($query);
 ?>
 
@@ -118,7 +120,7 @@ $result = $conn->query($query);
                                             <?php while ($row = $result->fetch_assoc()) : ?>
                                                 <tr>
                                                     <td><?= htmlspecialchars($row['rfid']); ?></td>
-                                                    <td><?= htmlspecialchars($row['status']); ?></td>
+                                                    <td><?= htmlspecialchars($row['status_name']); ?></td>
                                                     <td><?= htmlspecialchars($row['latitude']); ?></td>
                                                     <td><?= htmlspecialchars($row['longitude']); ?></td>
                                                     <td><?= htmlspecialchars($row['blok']); ?></td>
@@ -170,8 +172,7 @@ $result = $conn->query($query);
                 }
             });
         </script>
-
-
+    </div>
 </body>
 
 </html>

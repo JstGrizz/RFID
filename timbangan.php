@@ -196,7 +196,7 @@ if (isset($_SESSION['message'])) {
                             results.forEach(function(row) {
                                 output += '<tr>' +
                                     '<td>' + row.rfid + '</td>' +
-                                    '<td>' + row.status + '</td>' +
+                                    '<td>' + row.status_name + '</td>' +
                                     '<td>' + row.latitude + '</td>' +
                                     '<td>' + row.longitude + '</td>' +
                                     '<td>' + row.blok + '</td>' +
@@ -205,7 +205,7 @@ if (isset($_SESSION['message'])) {
                                     '</tr>';
                             });
                         } else {
-                            output = '<tr><td colspan="5">' + (results[0].error || 'No data found') + '</td></tr>';
+                            output = '<tr><td colspan="7">' + (results[0].error || 'No data found') + '</td></tr>';
                         }
                         document.querySelector('#dataResultsTable tbody').innerHTML = output;
                     }

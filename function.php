@@ -2,7 +2,7 @@
 include 'db.php';
 session_start(); // Ensure session is started at the top of the script
 
-function insertPohon($rfid, $status, $latitude, $longitude, $blok)
+function insertPohon($rfid, $latitude, $longitude, $blok)
 {
     global $conn;
 
@@ -10,14 +10,35 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
     $latitude = floatval($latitude);
     $longitude = floatval($longitude);
 
+    // Fetch the latest status for the given RFID
+    $latest_status_query = $conn->prepare("SELECT status_id FROM tree_data WHERE rfid = ? ORDER BY created_at DESC LIMIT 1");
+    if ($latest_status_query === false) {
+        die('MySQL prepare error: ' . $conn->error);
+    }
+
+    $latest_status_query->bind_param("s", $rfid);
+    $latest_status_query->execute();
+    $latest_status_query->bind_result($latest_status_id);
+    $latest_status_query->fetch();
+    $latest_status_query->close();
+
+    // Determine the next status
+    if ($latest_status_id === null || $latest_status_id == 6) {
+        // If no previous status or previous status is 'Ratoon 5', set to 'Induk'
+        $next_status_id = 1;
+    } else {
+        // Increment the status
+        $next_status_id = $latest_status_id + 1;
+    }
+
     // Prepare to insert new data
-    $insert_query = $conn->prepare("INSERT INTO tree_data (rfid, status, latitude, longitude, blok) VALUES (?, ?, ?, ?, ?)");
+    $insert_query = $conn->prepare("INSERT INTO tree_data (rfid, status_id, latitude, longitude, blok) VALUES (?, ?, ?, ?, ?)");
     if ($insert_query === false) {
         die('MySQL prepare error: ' . $conn->error);
     }
 
     // Bind parameters and execute
-    $insert_query->bind_param("ssdds", $rfid, $status, $latitude, $longitude, $blok);
+    $insert_query->bind_param("sidds", $rfid, $next_status_id, $latitude, $longitude, $blok);
     if ($insert_query->execute()) {
         $_SESSION['message'] = 'New record created successfully.';
         $_SESSION['message_type'] = 'success';
@@ -33,6 +54,7 @@ function insertPohon($rfid, $status, $latitude, $longitude, $blok)
     header("Location: pohon.php");
     exit;
 }
+
 
 
 
@@ -87,7 +109,3 @@ function insertOrUpdateTimbangan($rfid, $berat)
     header("Location: timbangan.php");
     exit;
 }
-
-
-
-

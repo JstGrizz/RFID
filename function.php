@@ -55,11 +55,6 @@ function insertPohon($rfid, $latitude, $longitude, $blok)
     exit;
 }
 
-
-
-
-
-
 function insertOrUpdateTimbangan($rfid, $berat)
 {
     global $conn;

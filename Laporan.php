@@ -114,20 +114,31 @@ $result = $conn->query($query);
                                                 <th>Blok</th>
                                                 <th>Berat</th>
                                                 <th>Tanggal Input Data</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="dataResults">
-                                            <?php while ($row = $result->fetch_assoc()) : ?>
-                                                <tr>
-                                                    <td><?= htmlspecialchars($row['rfid']); ?></td>
-                                                    <td><?= htmlspecialchars($row['status_name']); ?></td>
-                                                    <td><?= htmlspecialchars($row['latitude']); ?></td>
-                                                    <td><?= htmlspecialchars($row['longitude']); ?></td>
-                                                    <td><?= htmlspecialchars($row['blok']); ?></td>
-                                                    <td><?= htmlspecialchars($row['berat']); ?></td>
-                                                    <td><?= htmlspecialchars($row['created_at']); ?></td>
-                                                </tr>
-                                            <?php endwhile; ?>
+                                            <?php
+                                            if ($result->num_rows > 0) {
+                                                while ($row = $result->fetch_assoc()) {
+                                                    echo "<tr>";
+                                                    echo "<td>" . $row['rfid'] . "</td>";
+                                                    echo "<td>" . $row['blok'] . "</td>";
+                                                    echo "<td>" . $row['created_at'] . "</td>";
+                                                    echo "<td>" . $row['latitude'] . "</td>";
+                                                    echo "<td>" . $row['longitude'] . "</td>";
+                                                    echo "<td>" . $row['status_name'] . "</td>";
+                                                    echo "<td>" . $row['berat'] . "</td>";
+                                                    echo "<td>
+                                                            <button class='btn btn-primary btn-edit' data-id='" . $row['rfid'] . "'>Edit</button>
+                                                            <button class='btn btn-danger btn-delete' data-id='" . $row['rfid'] . "'>Delete</button>
+                                                        </td>";
+                                                    echo "</tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='8'>Tidak Ada Data/td></tr>";
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
                                 </div>

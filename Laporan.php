@@ -2,12 +2,12 @@
 include 'function.php';  // Include your database connection script
 
 // Fetch data
-$query = "SELECT td.rfid, td.blok, td.created_at, s.status_name, td.latitude, td.longitude, td.berat
-                            FROM tree_data td
-                            JOIN status s ON td.status_id = s.id ORDER BY created_at DESC"; // Adjust according to your table schema
+$query = "SELECT td.id, td.rfid, td.blok, td.created_at, s.status_name, td.latitude, td.longitude, td.berat
+          FROM tree_data td
+          JOIN status s ON td.status_id = s.id 
+          ORDER BY td.created_at DESC";
 $result = $conn->query($query);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -107,6 +107,7 @@ $result = $conn->query($query);
                                     <table class="table table-striped" id="dataResultsTable">
                                         <thead>
                                             <tr>
+                                                <th>id</th>
                                                 <th>RFID</th>
                                                 <th>Status</th>
                                                 <th>Latitude</th>
@@ -122,21 +123,22 @@ $result = $conn->query($query);
                                             if ($result->num_rows > 0) {
                                                 while ($row = $result->fetch_assoc()) {
                                                     echo "<tr>";
+                                                    echo "<td>" . $row['id'] . "</td>";
                                                     echo "<td>" . $row['rfid'] . "</td>";
-                                                    echo "<td>" . $row['blok'] . "</td>";
-                                                    echo "<td>" . $row['created_at'] . "</td>";
+                                                    echo "<td>" . $row['status_name'] . "</td>";
                                                     echo "<td>" . $row['latitude'] . "</td>";
                                                     echo "<td>" . $row['longitude'] . "</td>";
-                                                    echo "<td>" . $row['status_name'] . "</td>";
+                                                    echo "<td>" . $row['blok'] . "</td>";
                                                     echo "<td>" . $row['berat'] . "</td>";
+                                                    echo "<td>" . $row['created_at'] . "</td>";
                                                     echo "<td>
-                                                            <button class='btn btn-primary btn-edit' data-id='" . $row['rfid'] . "'>Edit</button>
+                                                            <a href='edit.php?id=" . $row['id'] . "' class='btn btn-primary'>Edit</a>
                                                             <button class='btn btn-danger btn-delete' data-id='" . $row['rfid'] . "'>Delete</button>
-                                                        </td>";
+                                                          </td>";
                                                     echo "</tr>";
                                                 }
                                             } else {
-                                                echo "<tr><td colspan='8'>Tidak Ada Data/td></tr>";
+                                                echo "<tr><td colspan='8'>Tidak Ada Data</td></tr>";
                                             }
                                             ?>
                                         </tbody>

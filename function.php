@@ -104,3 +104,28 @@ function insertOrUpdateTimbangan($rfid, $berat)
     header("Location: timbangan.php");
     exit;
 }
+
+function updateTreeData($id, $rfid, $status_id, $blok, $latitude, $longitude, $berat)
+{
+    global $conn;
+
+    $query = "UPDATE tree_data 
+              SET rfid = ?, status_id = ?, blok = ?, latitude = ?, longitude = ?, berat = ?
+              WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sissdsi", $rfid, $status_id, $blok, $latitude, $longitude, $berat, $id);
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = 'Data updated successfully.';
+        $_SESSION['message_type'] = 'success';
+    } else {
+        $_SESSION['message'] = 'Failed to update data.';
+        $_SESSION['message_type'] = 'error';
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    header("Location: edit.php?id=" . $id);
+    exit;
+}

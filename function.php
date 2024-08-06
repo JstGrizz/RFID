@@ -129,3 +129,26 @@ function updateTreeData($id, $rfid, $status_id, $blok, $latitude, $longitude, $b
     header("Location: edit.php?id=" . $id);
     exit;
 }
+
+// Method to delete a record based on ID
+function deleteTreeData($id) {
+    global $conn;
+
+    // Prepare the SQL statement to delete the record
+    $query = "DELETE FROM tree_data WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id); // Use "i" for integer type
+
+    if ($stmt->execute()) {
+        // Set success message in session
+        $_SESSION['message'] = 'Record deleted successfully.';
+        $_SESSION['message_type'] = 'success';
+    } else {
+        // Set error message in session
+        $_SESSION['message'] = 'Failed to delete the record.';
+        $_SESSION['message_type'] = 'error';
+    }
+
+    $stmt->close();
+    // $conn->close(); // Comment out if using the connection elsewhere
+}

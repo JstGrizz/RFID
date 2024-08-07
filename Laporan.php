@@ -133,8 +133,8 @@ $result = $conn->query($query);
                                                     echo "<td>" . $row['created_at'] . "</td>";
                                                     echo "<td>
                                                             <a href='edit.php?id=" . $row['id'] . "' class='btn btn-primary'>Edit</a>
-                                                            <button class='btn btn-danger btn-delete' data-id='" . $row['rfid'] . "'>Delete</button>
-                                                          </td>";
+                                                            <a href='delete.php?id=" . $row['id'] . "' class='btn btn-danger'>Delete</a>
+                                                        </td>";
                                                     echo "</tr>";
                                                 }
                                             } else {
@@ -164,24 +164,25 @@ $result = $conn->query($query);
                 const dataTable = new simpleDatatables.DataTable("#dataResultsTable", {
                     searchable: true,
                     fixedHeight: true,
-                    perPageSelect: [5, 10, 15, 20, 25], // This allows users to select how many rows they want to see
+                    perPageSelect: [5, 10, 15, 20, 25],
                     labels: {
-                        placeholder: "Search...", // Placeholder for the search box
-                        perPage: "{select} entries per page", // Label for the per-page selector
-                        noRows: "No entries found", // Message when no entries are found
-                        info: "Showing {start} to {end} of {rows} entries" // Information text
+                        placeholder: "Search...",
+                        perPage: "{select} entries per page",
+                        noRows: "No entries found",
+                        info: "Showing {start} to {end} of {rows} entries"
                     }
                 });
 
-                // Adding a custom class to the perPageSelect dropdown after initialization
+                // Add custom class to the perPageSelect dropdown
                 const selector = dataTable.wrapper.querySelector(".dataTable-selector");
                 if (selector) {
-                    selector.classList.add("form-select"); // Add your custom class here
+                    selector.classList.add("form-select");
                 }
 
+                // Align pagination to the right
                 const pagination = dataTable.wrapper.querySelector("nav.dataTable-pagination");
                 if (pagination) {
-                    pagination.style.textAlign = "right"; // Align pagination to the right
+                    pagination.style.textAlign = "right";
                 }
             });
         </script>

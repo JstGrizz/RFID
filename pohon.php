@@ -121,14 +121,23 @@ if (isset($_SESSION['message'])) {
                                             <label for="latitude">Blok</label>
                                         </div>
                                         <div class="col-md-10 form-group">
-                                            <input type="text" id="blok" class="form-control" name="blok" placeholder="Input Data Blok" />
+                                            <fieldset class="form-group">
+                                                <select class="form-select" id="blok" name="blok">
+                                                    <?php
+                                                    $blokNames = fetchBlokNames();
+                                                    foreach ($blokNames as $name) {
+                                                        echo "<option value='" . htmlspecialchars($name) . "'>" . htmlspecialchars($name) . "</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </fieldset>
                                         </div>
-                                        <div class="col-md-2">
+                                        <!-- <div class="col-md-2">
                                             <label for="latitude">Titik Tanam (Baris,Kolom)</label>
                                         </div>
                                         <div class="col-md-10 form-group">
                                             <input type="text" id="titik_tanam" class="form-control" name="titik_tanam" placeholder="Input Data Titik Tanam" />
-                                        </div>
+                                        </div> -->
                                         <div class="col-md-2">
                                             <label for="latitude">Latitude</label>
                                         </div>

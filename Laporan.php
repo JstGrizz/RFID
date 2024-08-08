@@ -2,11 +2,17 @@
 include 'function.php';  // Include your database connection script
 
 // Fetch data
-$query = "SELECT td.id, td.rfid, td.blok, td.created_at, s.status_name, td.latitude, td.longitude, td.berat
+$query = "SELECT td.id, td.rfid, b.blok_name, td.created_at, s.status_name, td.latitude, td.longitude, td.berat, td.updated_at
           FROM tree_data td
-          JOIN status s ON td.status_id = s.id 
+          JOIN status s ON td.status_id = s.status_id
+          JOIN blok b ON td.blok_id = b.blok_id
           ORDER BY td.created_at DESC";
+
 $result = $conn->query($query);
+
+if (!$result) {
+    die("SQL error: " . $conn->error);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,11 +69,22 @@ $result = $conn->query($query);
                 </div>
                 <div class="sidebar-menu">
                     <ul class="menu">
-                        <li class="sidebar-item active">
-                            <a href="Laporan.php" class="sidebar-link">
+                        <li class="sidebar-item has-sub active">
+                            <a href="#" class="sidebar-link">
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Laporan</span>
                             </a>
+                            <ul class="submenu">
+                                <li class="submenu-item active">
+                                    <a href="Laporan.php" class="submenu-link">List Data Pohon</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="data-Status.php" class="submenu-link">List Data Master Status</a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="data-Blok.php" class="submenu-link">List Data Master Blok</a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="sidebar-item">
                             <a href="timbangan.php" class="sidebar-link">
@@ -115,6 +132,7 @@ $result = $conn->query($query);
                                                 <th>Blok</th>
                                                 <th>Berat</th>
                                                 <th>Tanggal Input Data</th>
+                                                <th>Tanggal Update Data</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -128,9 +146,10 @@ $result = $conn->query($query);
                                                     echo "<td>" . $row['status_name'] . "</td>";
                                                     echo "<td>" . $row['latitude'] . "</td>";
                                                     echo "<td>" . $row['longitude'] . "</td>";
-                                                    echo "<td>" . $row['blok'] . "</td>";
+                                                    echo "<td>" . $row['blok_name'] . "</td>";
                                                     echo "<td>" . $row['berat'] . "</td>";
                                                     echo "<td>" . $row['created_at'] . "</td>";
+                                                    echo "<td>" . $row['updated_at'] . "</td>";
                                                     echo "<td>
                                                             <a href='edit.php?id=" . $row['id'] . "' class='btn btn-primary'>Edit</a>
                                                             <a href='delete.php?id=" . $row['id'] . "' class='btn btn-danger'>Delete</a>

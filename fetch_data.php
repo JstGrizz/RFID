@@ -11,7 +11,7 @@ if (isset($_GET['rfid'])) {
     // Prepare and execute a database query to fetch data based on RFID
     $stmt = $conn->prepare("SELECT td.rfid, td.blok, td.created_at, s.status_name, td.latitude, td.longitude, td.berat
                             FROM tree_data td
-                            JOIN status s ON td.status_id = s.id
+                            JOIN status s ON td.status_id = s.status_id
                             WHERE td.rfid = ?
                             ORDER BY td.created_at DESC
                             LIMIT 1");

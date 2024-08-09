@@ -106,10 +106,73 @@ function insertOrUpdateTimbangan($rfid, $berat)
     exit;
 }
 
+function insertStatusData($status_name)
+{
+    global $conn;  // Ensure that $conn is accessible
+
+    // First, check if the status name already exists in the database
+    $checkQuery = "SELECT status_id FROM status WHERE status_name = ?";
+    $checkStmt = $conn->prepare($checkQuery);
+    if (!$checkStmt) {
+        die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+    }
+
+    // Bind the status name to the prepared statement for the check
+    $checkStmt->bind_param("s", $status_name);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    $checkStmt->close();
+
+    if ($result->num_rows > 0) {
+        // If a row is found, the status name already exists
+        return "Keterangan Status Sudah Ada";
+    }
+
+    // If the status name does not exist, proceed to insert it
+    $query = "INSERT INTO status (status_name) VALUES (?)";
+    $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $status_name);
+    if (!$stmt->execute()) {
+        echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+        return false;
+    }
+
+    $stmt->close();
+    return true;
+}
+
+function insertBlokData($blok_name, $tahun, $bulan, $luas_tanah, $jumlah_pohon, $status_id) {
+    global $conn;
+    // Check if Blok already exists to prevent duplicates
+    $check = $conn->prepare("SELECT * FROM blok WHERE blok_name = ?");
+    $check->bind_param("s", $blok_name);
+    $check->execute();
+    if ($check->fetch()) {
+        return "Blok Name already exists";
+    }
+    $check->close();
+
+    // Insert new record
+    $stmt = $conn->prepare("INSERT INTO blok (blok_name, tahun, bulan, luas_tanah, jumlah_pohon, status_id) VALUES (?, ?, ?, ?, ?, ?)");
+    if (!$stmt) {
+        return "Prepare failed: (" . $conn->errno . ") " . $conn->error;
+    }
+    $stmt->bind_param("siidii", $blok_name, $tahun, $bulan, $luas_tanah, $jumlah_pohon, $status_id);
+    if (!$stmt->execute()) {
+        return $stmt->error;
+    }
+    $stmt->close();
+    return true;
+}
+
+
 function updateTreeData($id, $rfid, $status_id, $blok_id, $latitude, $longitude, $berat)
 {
     global $conn;
-    echo "rfid :  $rfid, status_id: $status_id,blok_id: $blok_id, latitude: $latitude , longitude: $longitude , blok_id: $blok_id,berat: $berat    ";
 
     // Fetch status_id based on blok_id
     $status_id = fetchBlokStatus($blok_id);
@@ -169,13 +232,14 @@ function updateStatusData($id, $status_name)
     exit;
 }
 
-function updateBlokData($blok_id, $blok_name, $tanggal_tanam, $luas_tanah, $jumlah_pohon, $status_id)
+function updateBlokData($blok_id, $blok_name, $tahun, $bulan, $luas_tanah, $jumlah_pohon, $status_id)
 {
-    global $conn; // Ensure that $conn is accessible
+    global $conn;
 
     $query = "UPDATE blok SET 
               blok_name = ?, 
-              tanggal_tanam = ?, 
+              tahun = ?, 
+              bulan = ?, 
               luas_tanah = ?, 
               jumlah_pohon = ?, 
               status_id = ? 
@@ -185,7 +249,7 @@ function updateBlokData($blok_id, $blok_name, $tanggal_tanam, $luas_tanah, $juml
         return "Prepare failed: (" . $conn->errno . ") " . $conn->error;
     }
 
-    if (!$stmt->bind_param("ssdiii", $blok_name, $tanggal_tanam, $luas_tanah, $jumlah_pohon, $status_id, $blok_id)) {
+    if (!$stmt->bind_param("siiiiii", $blok_name, $tahun, $bulan, $luas_tanah, $jumlah_pohon, $status_id, $blok_id)) {
         return "Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error;
     }
 
@@ -196,6 +260,7 @@ function updateBlokData($blok_id, $blok_name, $tanggal_tanam, $luas_tanah, $juml
     $stmt->close();
     return true;
 }
+
 
 
 
@@ -294,3 +359,14 @@ function fetchBlokStatus($blok_id)
         return null; // Return null if no status_id is found
     }
 }
+
+function getStatusOptions() {
+    global $conn;
+    $query = "SELECT status_id, status_name FROM status ORDER BY status_name";
+    $result = $conn->query($query);
+    if (!$result) {
+        return "Error retrieving status data: " . $conn->error;
+    }
+    return $result;
+}
+    

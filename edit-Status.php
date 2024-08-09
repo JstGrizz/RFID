@@ -1,15 +1,10 @@
 <?php
 include 'function.php'; // Include your database connection script
 
-// Fetch blok options for the dropdown
-$blokQuery = "SELECT blok_id, blok_name FROM blok";
-$blokResult = $conn->query($blokQuery);
-
-$id = $_GET['id'] ?? '';
-$query = "SELECT td.id, td.rfid, td.blok_id, td.created_at, s.status_name, td.status_id, td.latitude, td.longitude, td.berat
-        FROM tree_data td
-        JOIN status s ON td.status_id = s.status_id 
-        WHERE td.id = ?";
+$id = $_GET['status_id'] ?? '';
+$query = "SELECT *
+        FROM status
+        WHERE status_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -17,14 +12,9 @@ $result = $stmt->get_result();
 $data = $result->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $rfid = $_POST['rfid'];
-    $blok_id = $_POST['blok']; // Get blok_id from POST
-    $latitude = $_POST['latitude'];
-    $longitude = $_POST['longitude'];
-    $berat = $_POST['berat'];
-    $status_id = fetchBlokStatus($blok_id);
-
-    updateTreeData($id, $rfid, $status_id, $blok_id, $latitude, $longitude, $berat);
+    $status_name = $_POST['status_name'];
+    echo "status_id = $id, status_name = $status_name";
+    updateStatusData($id, $status_name);
 }
 
 if (isset($_SESSION['message'])) {
@@ -93,10 +83,10 @@ if (isset($_SESSION['message'])) {
                                 <span>Laporan</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item active">
+                                <li class="submenu-item">
                                     <a href="Laporan.php" class="submenu-link">List Data Pohon</a>
                                 </li>
-                                <li class="submenu-item">
+                                <li class="submenu-item active">
                                     <a href="data-Status.php" class="submenu-link">List Data Master Status</a>
                                 </li>
                                 <li class="submenu-item">
@@ -135,62 +125,22 @@ if (isset($_SESSION['message'])) {
                     <div class="card">
                         <div class="card-body">
                             <header class="mb-3">
-                                <a href="Laporan.php" class="btn btn-primary">Back to List</a>
+                                <a href="data-Status.php" class="btn btn-primary">Back to List</a>
                             </header>
-                            <form class="form form-horizontal" id="editForm" action="edit.php?id=<?php echo htmlspecialchars($data['id']); ?>" method="post">
+                            <form class="form form-horizontal" id="editForm" action="edit-Status.php?status_id=<?php echo htmlspecialchars($data['status_id']); ?>" method="post">
                                 <div class="form-body">
                                     <div class="row">
                                         <div class="col-md-2">
                                             <label for="id">ID</label>
                                         </div>
                                         <div class="col-md-10 form-group">
-                                            <input type="text" id="id" class="form-control" name="id" value="<?php echo htmlspecialchars($data['id']); ?>" disabled />
+                                            <input type="text" id="status_id" class="form-control" name="status_id" value="<?php echo htmlspecialchars($data['status_id']); ?>" disabled />
                                         </div>
                                         <div class="col-md-2">
-                                            <label for="rfid">RFID</label>
+                                            <label for="status_name">Keterangan Status</label>
                                         </div>
                                         <div class="col-md-10 form-group">
-                                            <input type="text" id="rfid" class="form-control" name="rfid" value="<?php echo htmlspecialchars($data['rfid']); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="status">Status</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="blok" class="form-control" name="blok" value="<?php echo htmlspecialchars($data['status_name']); ?>" disabled />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="blok">Blok</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="blok" name="blok">
-                                                    <?php
-                                                    $blokQuery = "SELECT blok_id, blok_name FROM blok";
-                                                    $blokResult = $conn->query($blokQuery);
-                                                    while ($blok = $blokResult->fetch_assoc()) {
-                                                        echo '<option value="' . htmlspecialchars($blok['blok_id']) . '"' . ($blok['blok_id'] == $data['blok_id'] ? ' selected' : '') . '>' . htmlspecialchars($blok['blok_name']) . '</option>';
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="latitude">Latitude</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="latitude" class="form-control" name="latitude" value="<?php echo htmlspecialchars(number_format((float)$data['latitude'], 7, '.', '')); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="longitude">Longitude</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="longitude" class="form-control" name="longitude" value="<?php echo htmlspecialchars(number_format((float)$data['longitude'], 7, '.', '')); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="berat">Berat</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="berat" class="form-control" name="berat" value="<?php echo htmlspecialchars(number_format((float)$data['berat'], 2, '.', '')); ?>" />
+                                            <input type="text" id="status_name" class="form-control" name="status_name" value="<?php echo htmlspecialchars($data['status_name']); ?>" />
                                         </div>
                                         <div class="col-sm-12 d-flex justify-content-end">
                                             <button type="submit" class="btn btn-primary me-1 mb-1">Update</button>

@@ -1,52 +1,33 @@
 <?php
-include 'function.php'; // Include your database connection script
+include 'function.php';  // Include your database connection script
 
-// Fetch blok options for the dropdown
-$blokQuery = "SELECT blok_id, blok_name FROM blok";
-$blokResult = $conn->query($blokQuery);
+// Fetch data
+$query = "SELECT *
+          FROM status
+          ORDER BY created_at DESC";
 
-$id = $_GET['id'] ?? '';
-$query = "SELECT td.id, td.rfid, td.blok_id, td.created_at, s.status_name, td.status_id, td.latitude, td.longitude, td.berat
-        FROM tree_data td
-        JOIN status s ON td.status_id = s.status_id 
-        WHERE td.id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_assoc();
+$result = $conn->query($query);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $rfid = $_POST['rfid'];
-    $blok_id = $_POST['blok']; // Get blok_id from POST
-    $latitude = $_POST['latitude'];
-    $longitude = $_POST['longitude'];
-    $berat = $_POST['berat'];
-    $status_id = fetchBlokStatus($blok_id);
-
-    updateTreeData($id, $rfid, $status_id, $blok_id, $latitude, $longitude, $berat);
-}
-
-if (isset($_SESSION['message'])) {
-    echo "<script>alert('" . $_SESSION['message'] . "');</script>";
-    unset($_SESSION['message']);
+if (!$result) {
+    die("SQL error: " . $conn->error);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RFID</title>
+    <title>DataTable - Mazer Admin Dashboard</title>
 
     <link rel="shortcut icon" href="./assets/compiled/svg/favicon.svg" type="image/x-icon" />
     <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAiCAYAAADRcLDBAAAEs2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS41LjAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgZXhpZjpQaXhlbFhEaW1lbnNpb249IjMzIgogICBleGlmOlBpeGVsWURpbWVuc2lvbj0iMzQiCiAgIGV4aWY6Q29sb3JTcGFjZT0iMSIKICAgdGlmZjpJbWFnZVdpZHRoPSIzMyIKICAgdGlmZjpJbWFnZUxlbmd0aD0iMzQiCiAgIHRpZmY6UmVzb2x1dGlvblVuaXQ9IjIiCiAgIHRpZmY6WFJlc29sdXRpb249Ijk2LjAiCiAgIHRpZmY6WVJlc29sdXRpb249Ijk2LjAiCiAgIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiCiAgIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIKICAgeG1wOk1vZGlmeURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiCiAgIHhtcDpNZXRhZGF0YURhdGU9IjIwMjItMDMtMzFUMTA6NTA6MjMrMDI6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJwcm9kdWNlZCIKICAgICAgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWZmaW5pdHkgRGVzaWduZXIgMS4xMC4xIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTAzLTMxVDEwOjUwOjIzKzAyOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9InIiPz5V57uAAAABgmlDQ1BzUkdCIElFQzYxOTY2LTIuMQAAKJF1kc8rRFEUxz9maORHo1hYKC9hISNGTWwsRn4VFmOUX5uZZ36oeTOv954kW2WrKLHxa8FfwFZZK0WkZClrYoOe87ypmWTO7dzzud97z+nec8ETzaiaWd4NWtYyIiNhZWZ2TvE946WZSjqoj6mmPjE1HKWkfdxR5sSbgFOr9Ll/rXoxYapQVik8oOqGJTwqPL5i6Q5vCzeo6dii8KlwpyEXFL519LjLLw6nXP5y2IhGBsFTJ6ykijhexGra0ITl5bRqmWU1fx/nJTWJ7PSUxBbxJkwijBBGYYwhBgnRQ7/MIQIE6ZIVJfK7f/MnyUmuKrPOKgZLpEhj0SnqslRPSEyKnpCRYdXp/9++msneoFu9JgwVT7b91ga+LfjetO3PQ9v+PgLvI1xkC/m5A+h7F32zoLXug38dzi4LWnwHzjeg8UGPGbFfySvuSSbh9QRqZ6H+Gqrm3Z7l9zm+h+iafNUV7O5Bu5z3L/wAdthn7QIme0YAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAJTSURBVFiF7Zi9axRBGIefEw2IdxFBRQsLWUTBaywSK4ubdSGVIY1Y6HZql8ZKCGIqwX/AYLmCgVQKfiDn7jZeEQMWfsSAHAiKqPiB5mIgELWYOW5vzc3O7niHhT/YZvY37/swM/vOzJbIqVq9uQ04CYwCI8AhYAlYAB4Dc7HnrOSJWcoJcBS4ARzQ2F4BZ2LPmTeNuykHwEWgkQGAet9QfiMZjUSt3hwD7psGTWgs9pwH1hC1enMYeA7sKwDxBqjGnvNdZzKZjqmCAKh+U1kmEwi3IEBbIsugnY5avTkEtIAtFhBrQCX2nLVehqyRqFoCAAwBh3WGLAhbgCRIYYinwLolwLqKUwwi9pxV4KUlxKKKUwxC6ZElRCPLYAJxGfhSEOCz6m8HEXvOB2CyIMSk6m8HoXQTmMkJcA2YNTHm3congOvATo3tE3A29pxbpnFzQSiQPcB55IFmFNgFfEQeahaAGZMpsIJIAZWAHcDX2HN+2cT6r39GxmvC9aPNwH5gO1BOPFuBVWAZue0vA9+A12EgjPadnhCuH1WAE8ivYAQ4ohKaagV4gvxi5oG7YSA2vApsCOH60WngKrA3R9IsvQUuhIGY00K4flQG7gHH/mLytB4C42EgfrQb0mV7us8AAMeBS8mGNMR4nwHamtBB7B4QRNdaS0M8GxDEog7iyoAguvJ0QYSBuAOcAt71Kfl7wA8DcTvZ2KtOlJEr+ByyQtqqhTyHTIeB+ONeqi3brh+VgIN0fohUgWGggizZFTplu12yW8iy/YLOGWMpDMTPXnl+Az9vj2HERYqPAAAAAElFTkSuQmCC" type="image/png" />
 
+    <link rel="stylesheet" href="assets/extensions/simple-datatables/style.css" />
+
+    <link rel="stylesheet" href="./assets/compiled/css/table-datatable.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app-dark.css" />
-    <link rel="stylesheet" href="./assets/compiled/css/iconly.css" />
 </head>
 
 <body>
@@ -66,8 +47,7 @@ if (isset($_SESSION['message'])) {
                                     <g transform="translate(-210 -1)">
                                         <path d="M220.5 2.5v2m6.5.5l-1.5 1.5"></path>
                                         <circle cx="220.5" cy="11.5" r="4"></circle>
-                                        <path d="m214 5l1.5 1.5m5 14v-2m6.5-.5l-1.5-1.5M214 18l1.5-1.5m-4-5h2m14 0h2">
-                                        </path>
+                                        <path d="m214 5l1.5 1.5m5 14v-2m6.5-.5l-1.5-1.5M214 18l1.5-1.5m-4-5h2m14 0h2"></path>
                                     </g>
                                 </g>
                             </svg>
@@ -93,10 +73,10 @@ if (isset($_SESSION['message'])) {
                                 <span>Laporan</span>
                             </a>
                             <ul class="submenu">
-                                <li class="submenu-item active">
+                                <li class="submenu-item">
                                     <a href="Laporan.php" class="submenu-link">List Data Pohon</a>
                                 </li>
-                                <li class="submenu-item">
+                                <li class="submenu-item active">
                                     <a href="data-Status.php" class="submenu-link">List Data Master Status</a>
                                 </li>
                                 <li class="submenu-item">
@@ -119,97 +99,101 @@ if (isset($_SESSION['message'])) {
                     </ul>
                 </div>
             </div>
-        </div>
-        <div id="main">
-            <header class="mb-3">
-                <a href="#" class="burger-btn d-block d-xl-none">
-                    <i class="bi bi-justify fs-3"></i>
-                </a>
-            </header>
+            <div id="main">
+                <header class="mb-3">
+                    <a href="#" class="burger-btn d-block d-xl-none">
+                        <i class="bi bi-justify fs-3"></i>
+                    </a>
+                </header>
 
-            <div class="page-heading">
-                <h3>EDIT DATA</h3>
-            </div>
-            <div class="page-content">
-                <section class="section">
-                    <div class="card">
-                        <div class="card-body">
-                            <header class="mb-3">
-                                <a href="Laporan.php" class="btn btn-primary">Back to List</a>
-                            </header>
-                            <form class="form form-horizontal" id="editForm" action="edit.php?id=<?php echo htmlspecialchars($data['id']); ?>" method="post">
-                                <div class="form-body">
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <label for="id">ID</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="id" class="form-control" name="id" value="<?php echo htmlspecialchars($data['id']); ?>" disabled />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="rfid">RFID</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="rfid" class="form-control" name="rfid" value="<?php echo htmlspecialchars($data['rfid']); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="status">Status</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="blok" class="form-control" name="blok" value="<?php echo htmlspecialchars($data['status_name']); ?>" disabled />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="blok">Blok</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <fieldset class="form-group">
-                                                <select class="form-select" id="blok" name="blok">
-                                                    <?php
-                                                    $blokQuery = "SELECT blok_id, blok_name FROM blok";
-                                                    $blokResult = $conn->query($blokQuery);
-                                                    while ($blok = $blokResult->fetch_assoc()) {
-                                                        echo '<option value="' . htmlspecialchars($blok['blok_id']) . '"' . ($blok['blok_id'] == $data['blok_id'] ? ' selected' : '') . '>' . htmlspecialchars($blok['blok_name']) . '</option>';
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </fieldset>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="latitude">Latitude</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="latitude" class="form-control" name="latitude" value="<?php echo htmlspecialchars(number_format((float)$data['latitude'], 7, '.', '')); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="longitude">Longitude</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="longitude" class="form-control" name="longitude" value="<?php echo htmlspecialchars(number_format((float)$data['longitude'], 7, '.', '')); ?>" />
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="berat">Berat</label>
-                                        </div>
-                                        <div class="col-md-10 form-group">
-                                            <input type="text" id="berat" class="form-control" name="berat" value="<?php echo htmlspecialchars(number_format((float)$data['berat'], 2, '.', '')); ?>" />
-                                        </div>
-                                        <div class="col-sm-12 d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-primary me-1 mb-1">Update</button>
-                                            <button type="reset" class="btn btn-light-secondary me-1 mb-1">Reset</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+                <div class="page-heading">
+                    <div class="page-title">
+                        <div class="row">
+                            <div class="col-12 col-md-6 order-md-1 order-last">
+                                <h3>Laporan Data Pohon</h3>
+                            </div>
                         </div>
                     </div>
-                </section>
-                <?php include 'footer-dashboard.php'; ?>
+                    <section class="section">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- Dynamic Data Display Area -->
+                                <div id="dataDisplayArea">
+                                    <table class="table table-striped" id="dataResultsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>id</th>
+                                                <th>Keterangan Status</th>
+                                                <th>Tanggal Input Data</th>
+                                                <th>Tanggal Update Data</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dataResults">
+                                            <?php
+                                            if ($result->num_rows > 0) {
+                                                while ($row = $result->fetch_assoc()) {
+                                                    echo "<tr>";
+                                                    echo "<td>" . $row['status_id'] . "</td>";
+                                                    echo "<td>" . $row['status_name'] . "</td>";
+                                                    echo "<td>" . $row['created_at'] . "</td>";
+                                                    echo "<td>" . $row['updated_at'] . "</td>";
+                                                    echo "<td>
+                                                            <a href='edit-Status.php?status_id=" . $row['status_id'] . "' class='btn btn-primary'>Edit</a>
+                                                            <a href='delete-Status.php?status_id=" . $row['status_id'] . "' class='btn btn-danger'>Delete</a>
+                                                        </td>";
+                                                    echo "</tr>";
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='8'>Tidak Ada Data</td></tr>";
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <?php include 'footer-dashboard.php' ?>
             </div>
         </div>
         <script src="assets/static/js/components/dark.js"></script>
         <script src="assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
         <script src="assets/compiled/js/app.js"></script>
-        <script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
-        <script src="assets/static/js/pages/dashboard.js"></script>
+
+        <script src="assets/extensions/simple-datatables/umd/simple-datatables.js"></script>
+        <script src="assets/static/js/pages/simple-datatables.js"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const dataTable = new simpleDatatables.DataTable("#dataResultsTable", {
+                    searchable: true,
+                    fixedHeight: true,
+                    perPageSelect: [5, 10, 15, 20, 25],
+                    labels: {
+                        placeholder: "Search...",
+                        perPage: "{select} entries per page",
+                        noRows: "No entries found",
+                        info: "Showing {start} to {end} of {rows} entries"
+                    }
+                });
+
+                // Add custom class to the perPageSelect dropdown
+                const selector = dataTable.wrapper.querySelector(".dataTable-selector");
+                if (selector) {
+                    selector.classList.add("form-select");
+                }
+
+                // Align pagination to the right
+                const pagination = dataTable.wrapper.querySelector("nav.dataTable-pagination");
+                if (pagination) {
+                    pagination.style.textAlign = "right";
+                }
+            });
+        </script>
+    </div>
 </body>
 
 </html>

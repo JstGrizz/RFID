@@ -226,7 +226,7 @@ if (isset($_SESSION['message'])) {
                                 '<td>' + row.status_name + '</td>' +
                                 '<td>' + row.latitude + '</td>' +
                                 '<td>' + row.longitude + '</td>' +
-                                '<td>' + row.blok + '</td>' +
+                                '<td>' + row.blok_name + '</td>' +
                                 '<td>' + row.berat + '</td>' +
                                 '<td>' + row.created_at + '</td>' +
                                 '</tr>';

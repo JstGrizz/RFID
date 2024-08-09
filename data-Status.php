@@ -4,7 +4,7 @@ include 'function.php';  // Include your database connection script
 // Fetch data
 $query = "SELECT *
           FROM status
-          ORDER BY created_at DESC";
+          ORDER BY created_at ASC";
 
 $result = $conn->query($query);
 
@@ -28,6 +28,18 @@ if (!$result) {
     <link rel="stylesheet" href="./assets/compiled/css/table-datatable.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app-dark.css" />
+    <style>
+        #dataResultsTable th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #dataResultsTable td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -117,6 +129,7 @@ if (!$result) {
                     <section class="section">
                         <div class="card">
                             <div class="card-body">
+
                                 <!-- Dynamic Data Display Area -->
                                 <div id="dataDisplayArea">
                                     <table class="table table-striped" id="dataResultsTable">
@@ -151,6 +164,7 @@ if (!$result) {
                                         </tbody>
                                     </table>
                                 </div>
+                                <a href="add-Status.php" class="btn btn-success">Tambah Data</a>
                             </div>
                         </div>
                     </section>

@@ -14,12 +14,13 @@ $statusResult = $conn->query($statusQuery);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $blok_name = $_POST['blok_name'];
-    $tanggal_tanam = $_POST['tanggal_tanam'];
+    $tahun = $_POST['tahun_tanam'];  // New field
+    $bulan = $_POST['bulan_tanam'];  // New field
     $luas_tanah = $_POST['luas_tanah'];
     $jumlah_pohon = $_POST['jumlah_pohon'];
     $status_id = $_POST['status_id'];
 
-    $updateResult = updateBlokData($blok_id, $blok_name, $tanggal_tanam, $luas_tanah, $jumlah_pohon, $status_id);
+    $updateResult = updateBlokData($blok_id, $blok_name, $tahun, $bulan, $luas_tanah, $jumlah_pohon, $status_id);
 
     if ($updateResult === true) {
         echo "<script>alert('Update successful'); window.location='data-Blok.php';</script>";
@@ -28,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -149,10 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <input type="text" id="blok_name" class="form-control" name="blok_name" value="<?php echo htmlspecialchars($data['blok_name']); ?>" />
                                         </div>
                                         <div class="col-md-2">
-                                            <label for="tanggal_tanam">Tanggal Tanam</label>
+                                            <label for="tanggal_tanam">Tahun Tanam</label>
                                         </div>
                                         <div class="col-md-10 form-group">
-                                            <input type="text" id="tanggal_tanam" class="form-control" name="tanggal_tanam" value="<?php echo htmlspecialchars($data['tanggal_tanam']); ?>" />
+                                            <input type="text" id="tahun_tanam" class="form-control" name="tahun_tanam" value="<?php echo htmlspecialchars($data['tahun']); ?>" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="tanggal_tanam">Bulan Tanam</label>
+                                        </div>
+                                        <div class="col-md-10 form-group">
+                                            <input type="text" id="bulan_tanam" class="form-control" name="bulan_tanam" value="<?php echo htmlspecialchars($data['bulan']); ?>" />
                                         </div>
                                         <div class="col-md-2">
                                             <label for="luas_tanah">Luas Tanah</label>

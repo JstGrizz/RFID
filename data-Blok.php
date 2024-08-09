@@ -2,7 +2,7 @@
 include 'function.php';  // Include your database connection script
 
 // Fetch data
-$query = "SELECT blok.*, status.status_name FROM blok LEFT JOIN status ON blok.status_id = status.status_id ORDER BY blok.created_at DESC";
+$query = "SELECT blok.*, status.status_name FROM blok LEFT JOIN status ON blok.status_id = status.status_id ORDER BY blok.created_at ASC";
 $result = $conn->query($query);
 
 if (!$result) {
@@ -25,6 +25,19 @@ if (!$result) {
     <link rel="stylesheet" href="./assets/compiled/css/table-datatable.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app-dark.css" />
+
+    <style>
+        #dataResultsTable th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #dataResultsTable td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -121,7 +134,8 @@ if (!$result) {
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Blok Name</th>
-                                                <th>Tanggal Tanam</th>
+                                                <th>Tahun Tanam</th>
+                                                <th>Bulan Tanam</th>
                                                 <th>Luas Tanah</th>
                                                 <th>Jumlah Pohon</th>
                                                 <th>Status</th>
@@ -137,7 +151,8 @@ if (!$result) {
                                                     echo "<tr>";
                                                     echo "<td>" . $row['blok_id'] . "</td>";
                                                     echo "<td>" . $row['blok_name'] . "</td>";
-                                                    echo "<td>" . $row['tanggal_tanam'] . "</td>";
+                                                    echo "<td>" . $row['tahun'] . "</td>";
+                                                    echo "<td>" . $row['bulan'] . "</td>";
                                                     echo "<td>" . $row['luas_tanah'] . "</td>";
                                                     echo "<td>" . $row['jumlah_pohon'] . "</td>";
                                                     echo "<td>" . $row['status_name'] . "</td>";
@@ -156,6 +171,7 @@ if (!$result) {
                                         </tbody>
                                     </table>
                                 </div>
+                                <a href="add-Blok.php" class="btn btn-success">Tambah Data</a>
                             </div>
                         </div>
                     </section>

@@ -6,7 +6,7 @@ $query = "SELECT td.id, td.rfid, b.blok_name, td.created_at, s.status_name, td.l
           FROM tree_data td
           JOIN status s ON td.status_id = s.status_id
           JOIN blok b ON td.blok_id = b.blok_id
-          ORDER BY td.created_at DESC";
+          ORDER BY td.created_at ASC";
 
 $result = $conn->query($query);
 
@@ -30,6 +30,19 @@ if (!$result) {
     <link rel="stylesheet" href="./assets/compiled/css/table-datatable.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app.css" />
     <link rel="stylesheet" href="./assets/compiled/css/app-dark.css" />
+
+    <style>
+        #dataResultsTable th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #dataResultsTable td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+
 </head>
 
 <body>
